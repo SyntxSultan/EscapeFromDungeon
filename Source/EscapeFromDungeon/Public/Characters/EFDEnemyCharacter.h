@@ -14,6 +14,11 @@ class ESCAPEFROMDUNGEON_API AEFDEnemyCharacter : public AEFDCharacterBase, publi
 	GENERATED_BODY()
 public:
 	AEFDEnemyCharacter();
+	
+	// Enemy Interface
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	// End Enemy Interface
+protected:
+	virtual void BeginPlay() override;
 };

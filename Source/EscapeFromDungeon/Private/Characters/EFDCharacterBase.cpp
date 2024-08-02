@@ -12,6 +12,11 @@ AEFDCharacterBase::AEFDCharacterBase()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+UAbilitySystemComponent* AEFDCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 void AEFDCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

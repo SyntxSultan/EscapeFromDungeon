@@ -3,11 +3,25 @@
 
 #include "Characters/EFDEnemyCharacter.h"
 
+#include "AbilitySystem/EFDAbilitySystemComponent.h"
+#include "AbilitySystem/EFDAttributeSet.h"
 #include "EscapeFromDungeon/EscapeFromDungeon.h"
 
 AEFDEnemyCharacter::AEFDEnemyCharacter()
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	AbilitySystemComponent = CreateDefaultSubobject<UEFDAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	AttributeSet = CreateDefaultSubobject<UEFDAttributeSet>("AttributeSet");
+}
+
+void AEFDEnemyCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void AEFDEnemyCharacter::HighlightActor()

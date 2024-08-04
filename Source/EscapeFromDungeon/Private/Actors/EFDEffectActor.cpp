@@ -32,9 +32,11 @@ void AEFDEffectActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
 	if (TScriptInterface<IAbilitySystemInterface> ASCInterface = OtherActor)
 	{
+		//These are test codes later going to change with GameplayEffect system
 		const UEFDAttributeSet* EFDAttributeSet = Cast<UEFDAttributeSet>(ASCInterface->GetAbilitySystemComponent()->GetAttributeSet(UEFDAttributeSet::StaticClass()));
 		UEFDAttributeSet* MutableAttributeSet = const_cast<UEFDAttributeSet*>(EFDAttributeSet);
 		MutableAttributeSet->SetHealth(MutableAttributeSet->GetHealth() + 25.f);
+		MutableAttributeSet->SetMana(MutableAttributeSet->GetMana() - 25.f);
 		Destroy();
 	}
 }

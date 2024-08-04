@@ -10,3 +10,13 @@ void UEFDWidgetController::SetWidgetControllerParams(const FWidgetControllerPara
 	AbilitySystemComponent = WidgetControllerParams.AbilitySystemComponent;
 	AttributeSet = WidgetControllerParams.AttributeSet;
 }
+
+void UEFDWidgetController::BroadcastInitialValues()
+{
+	// Fill in child
+}
+
+void UEFDWidgetController::BindCallbacksToDependencies()
+{
+	// Fill in child
+}

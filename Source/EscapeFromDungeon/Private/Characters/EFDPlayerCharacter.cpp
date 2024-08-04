@@ -5,7 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/EFDPlayerController.h"
 #include "Player/EFDPlayerState.h"
+#include "UI/HUD/EFDHUD.h"
 
 AEFDPlayerCharacter::AEFDPlayerCharacter()
 {
@@ -40,4 +42,12 @@ void AEFDPlayerCharacter::InitAbilityActorInfo()
 	EFDPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(EFDPlayerState, this);
 	AbilitySystemComponent = EFDPlayerState->GetAbilitySystemComponent();
 	AttributeSet = EFDPlayerState->GetAttributeSet();
+
+	if (AEFDPlayerController* EFDPlayerController = Cast<AEFDPlayerController>(GetController()))
+	{
+		if (AEFDHUD* EFDHUD = Cast<AEFDHUD>(EFDPlayerController->GetHUD()))
+		{
+			EFDHUD->InitOverlay(EFDPlayerController, EFDPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }

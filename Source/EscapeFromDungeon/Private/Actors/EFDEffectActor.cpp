@@ -11,11 +11,14 @@ AEFDEffectActor::AEFDEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	SceneComponent = CreateDefaultSubobject<USceneComponent>("RootSceneComp");
+	SetRootComponent(SceneComponent);
+	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	SetRootComponent(Mesh);
+	Mesh->SetupAttachment(GetRootComponent());
 	
 	Sphere = CreateDefaultSubobject<USphereComponent>("Sphere");
-	Sphere->SetupAttachment(GetRootComponent());
+	Sphere->SetupAttachment(Mesh);
 }
 
 void AEFDEffectActor::BeginPlay()

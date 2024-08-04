@@ -17,8 +17,10 @@ void AEFDPlayerController::BeginPlay()
 	check(PlayerContext); // if Player Context is not valid game will crash
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(Subsystem);
-	Subsystem->AddMappingContext(PlayerContext, 0);
+	if(Subsystem)
+	{
+		Subsystem->AddMappingContext(PlayerContext, 0);
+	}
 
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;

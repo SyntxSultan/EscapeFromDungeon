@@ -66,6 +66,7 @@ protected:
  
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
+	//ActorLevel can change effect magnitude based an CurveTable
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Applied Effects")
 	float ActorLevel = 1;
 };

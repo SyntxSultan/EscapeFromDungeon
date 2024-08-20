@@ -4,6 +4,7 @@
 #include "Characters/EFDPlayerCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/EFDAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/EFDPlayerController.h"
 #include "Player/EFDPlayerState.h"
@@ -40,6 +41,7 @@ void AEFDPlayerCharacter::InitAbilityActorInfo()
 	AEFDPlayerState* EFDPlayerState = GetPlayerState<AEFDPlayerState>();
 	check(EFDPlayerState);
 	EFDPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(EFDPlayerState, this);
+	Cast<UEFDAbilitySystemComponent>(EFDPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = EFDPlayerState->GetAbilitySystemComponent();
 	AttributeSet = EFDPlayerState->GetAttributeSet();
 

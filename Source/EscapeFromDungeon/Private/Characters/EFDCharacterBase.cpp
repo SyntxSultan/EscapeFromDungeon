@@ -22,3 +22,8 @@ void AEFDCharacterBase::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
+void AEFDCharacterBase::InitAbilityActorInfo()
+{
+	
+}

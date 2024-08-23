@@ -18,7 +18,12 @@ UEFDAttributeSet::UEFDAttributeSet()
 void UEFDAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	/* Primary Attributes */
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Strength, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Resilience, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
+	/* Vital Attributes */
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Mana, COND_None, REPNOTIFY_Always);
@@ -104,4 +109,22 @@ void UEFDAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) c
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, MaxMana, OldMaxMana);
 }
 
+void UEFDAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Strength, OldStrength);
+}
 
+void UEFDAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Intelligence, OldIntelligence);
+}
+
+void UEFDAttributeSet::OnRep_Resilience(const FGameplayAttributeData& OldResilience)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Resilience, OldResilience);
+}
+
+void UEFDAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldVigor);
+}

@@ -18,16 +18,30 @@ UEFDAttributeSet::UEFDAttributeSet()
 void UEFDAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	/* Vital Attributes */
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	/* Primary Attributes */
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Strength, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Resilience, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
-	/* Vital Attributes */
-	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Charisma, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Perception, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Luck, COND_None, REPNOTIFY_Always);
+	/* Secondary Attributes */
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, CriticalHitChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, CriticalHitDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, CriticalHitResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+
 }
 
 void UEFDAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -127,4 +141,59 @@ void UEFDAttributeSet::OnRep_Resilience(const FGameplayAttributeData& OldResilie
 void UEFDAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldVigor);
+}
+
+void UEFDAttributeSet::OnRep_Charisma(const FGameplayAttributeData& OldCharisma)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldCharisma);
+}
+
+void UEFDAttributeSet::OnRep_Perception(const FGameplayAttributeData& OldPerception)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldPerception);
+}
+
+void UEFDAttributeSet::OnRep_Luck(const FGameplayAttributeData& OldLuck)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldLuck);
+}
+
+void UEFDAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldArmor);
+}
+
+void UEFDAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldArmorPenetration);
+}
+
+void UEFDAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldBlockChance);
+}
+
+void UEFDAttributeSet::OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldCriticalHitChance);
+}
+
+void UEFDAttributeSet::OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldCriticalHitDamage);
+}
+
+void UEFDAttributeSet::OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldCriticalHitResistance);
+}
+
+void UEFDAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldHealthRegeneration);
+}
+
+void UEFDAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldManaRegeneration);
 }

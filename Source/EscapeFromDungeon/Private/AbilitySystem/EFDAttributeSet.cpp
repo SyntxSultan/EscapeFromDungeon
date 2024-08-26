@@ -10,9 +10,7 @@
 UEFDAttributeSet::UEFDAttributeSet()
 {
 	InitHealth(30.f);
-	InitMaxHealth(100.f);
 	InitMana(10.f);
-	InitMaxMana(50.f);
 }
 
 void UEFDAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -43,3 +43,8 @@ void AEFDEnemyCharacter::UnHighlightActor()
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
 }
+
+int32 AEFDEnemyCharacter::GetPlayerLevel()
+{
+	return Level;
+}

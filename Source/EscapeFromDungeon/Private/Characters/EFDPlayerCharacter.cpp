@@ -52,5 +52,12 @@ void AEFDPlayerCharacter::InitAbilityActorInfo()
 			EFDHUD->InitOverlay(EFDPlayerController, EFDPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	InitializePrimaryAttributes();
+	InitializeDefaultAttributes();
+}
+
+int32 AEFDPlayerCharacter::GetPlayerLevel()
+{
+	const AEFDPlayerState* EFDPlayerState = GetPlayerState<AEFDPlayerState>();
+	check(EFDPlayerState);
+	return EFDPlayerState->GetPlayerLevel();
 }

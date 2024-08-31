@@ -4,6 +4,7 @@
 #include "Characters/EFDCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/EFDAbilitySystemComponent.h"
 
 AEFDCharacterBase::AEFDCharacterBase()
 {
@@ -45,4 +46,11 @@ void AEFDCharacterBase::InitializeDefaultAttributes() const
 	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
+}
+
+void AEFDCharacterBase::AddCharacterAbilities()
+{
+	if (!HasAuthority()) return;
+	UEFDAbilitySystemComponent* EFDASC = CastChecked<UEFDAbilitySystemComponent>(AbilitySystemComponent);
+	EFDASC->AddCharacterAbilities(StartupAbilities);
 }

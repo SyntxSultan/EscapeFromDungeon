@@ -6,7 +6,7 @@
 #include "UI/WidgetController/EFDWidgetController.h"
 #include "AttributeMenuWidgetController.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class ESCAPEFROMDUNGEON_API UAttributeMenuWidgetController : public UEFDWidgetController
 {
 	GENERATED_BODY()

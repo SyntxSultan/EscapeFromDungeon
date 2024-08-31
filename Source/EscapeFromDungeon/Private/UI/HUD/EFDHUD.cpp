@@ -3,6 +3,7 @@
 
 #include "UI/HUD/EFDHUD.h"
 
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/Widgets/EFDUserWidget.h"
 
@@ -13,9 +14,19 @@ UOverlayWidgetController* AEFDHUD::GetOverlayWidgetController(const FWidgetContr
 		OverlayWidgetController = NewObject<UOverlayWidgetController>(this, OverlayWidgetControllerClass);
 		OverlayWidgetController->SetWidgetControllerParams(WCParams);
 		OverlayWidgetController->BindCallbacksToDependencies();
-		return  OverlayWidgetController;
 	}
 	return  OverlayWidgetController;
+}
+
+UAttributeMenuWidgetController* AEFDHUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (AttributeMenuWidgetController == nullptr)
+	{
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(WCParams);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+	}
+	return  AttributeMenuWidgetController;
 }
 
 void AEFDHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)

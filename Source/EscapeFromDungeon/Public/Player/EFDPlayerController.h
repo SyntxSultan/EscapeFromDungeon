@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "EFDPlayerController.generated.h"
 
+class USplineComponent;
+class UEFDAbilitySystemComponent;
 struct FInputActionValue;
+class UEFDInputConfig;
 class UInputMappingContext;
 class UInputAction;
 class IEnemyInterface;
@@ -28,8 +32,33 @@ private:
 	TObjectPtr<UInputAction> MoveAction;
 
 	void Move(const FInputActionValue& Value);
+
 	void CursorTrace();
-	
+	FHitResult CursorHit;
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
+
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UEFDInputConfig> InputConfig;
+
+	UPROPERTY()
+	TObjectPtr<UEFDAbilitySystemComponent> EFDAbilitySystem;
+
+	UEFDAbilitySystemComponent* GetEFDAbilitySystemComponent();
+
+	FVector CachedDestination = FVector::ZeroVector;
+	float FollowTime = 0.f;
+	float ShortPressThreshold = 0.75f;
+	bool bAutoRunning = false;
+	bool bTargeting = false;
+	UPROPERTY(EditDefaultsOnly)
+	float AutoRunAcceptanceRadius = 50.f;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USplineComponent> Spline;
+	
+	void AutoRun();
 };

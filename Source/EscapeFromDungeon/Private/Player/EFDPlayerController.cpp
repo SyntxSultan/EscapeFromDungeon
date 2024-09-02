@@ -2,22 +2,29 @@
 
 
 #include "Player/EFDPlayerController.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
+#include "EFDGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
+#include "AbilitySystem/EFDAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
+#include "Input/EFDInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AEFDPlayerController::AEFDPlayerController()
 {
 	bReplicates = true;
+	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
 void AEFDPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	check(PlayerContext); // if Player Context is not valid game will crash
+	check(PlayerContext); 
 
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if(Subsystem)
+	if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(PlayerContext, 0);
 	}
@@ -34,70 +41,112 @@ void AEFDPlayerController::BeginPlay()
 void AEFDPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent); //if cast fails game will crash
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	
+	UEFDInputComponent* EFDInputComponent = CastChecked<UEFDInputComponent>(InputComponent);
+	
+	EFDInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	EFDInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
 void AEFDPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 	CursorTrace();
+	AutoRun();
 }
 
 void AEFDPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
 	ThisActor = CursorHit.GetActor();
 
-	/*
-	 *	Line Trace Scenarios
-	 *	A. LastActor is null && ThisActor is null
-	 *		- Do nothing
-	 *	B. LastActor is null && ThisActor is valid
-	 *		- Highlight ThisActor
-	 *	C. LastActor is valid && ThisActor is null
-	 *		- Unhighlight LastActor
-	 *	D. Both actors are valid, but LastActor != ThisActor
-	 *		- Unhighlight LastActor, Highlight ThisActor
-	 *	E. Both actors are valid and LastActor == ThisActor
-	 *		- Do Nothing
-	 */
-
-	if (LastActor == nullptr)
+	if (LastActor != ThisActor)
 	{
-		if (ThisActor != nullptr)
+		if (LastActor) LastActor->UnHighlightActor();
+		if (ThisActor) ThisActor->HighlightActor();
+	}
+}
+
+void AEFDPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (InputTag.MatchesTagExact(FEFDGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting = ThisActor ? true : false;
+		bAutoRunning = false;
+	}
+}
+
+void AEFDPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (!InputTag.MatchesTagExact(FEFDGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetEFDAbilitySystemComponent())
 		{
-			// Case B
-			ThisActor->HighlightActor();
+			GetEFDAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
 		}
-		else
+		return;
+	}
+
+	if (bTargeting)
+	{
+		if (GetEFDAbilitySystemComponent())
 		{
-			// Case A
+			GetEFDAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
 		}
 	}
 	else
 	{
-		if (ThisActor == nullptr)
+		if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			// Case C
-			LastActor->UnHighlightActor();
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+			{
+				Spline->ClearSplinePoints();
+				for (const FVector& PointLoc : NavPath->PathPoints)
+				{
+					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+				}
+				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+				bAutoRunning = true;
+			}
 		}
-		else
+		FollowTime = 0.f;
+		bTargeting = false;
+	}
+}
+
+void AEFDPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (!InputTag.MatchesTagExact(FEFDGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetEFDAbilitySystemComponent())
 		{
-			if (LastActor != ThisActor)
-			{
-				// Case D
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			}
-			else
-			{
-				// Case E
-			}
+			GetEFDAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+	if (bTargeting)
+	{
+		if (GetEFDAbilitySystemComponent())
+		{
+			GetEFDAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+	}
+	else
+	{
+		FollowTime += GetWorld()->GetDeltaSeconds();
+		
+		if (CursorHit.bBlockingHit)
+		{
+			CachedDestination = CursorHit.ImpactPoint;
+		}
+		
+		if (APawn* ControlledPawn = GetPawn())
+		{
+			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDirection);
 		}
 	}
 }
@@ -115,6 +164,32 @@ void AEFDPlayerController::Move(const FInputActionValue& Value)
 		ControlledPawn->AddMovementInput(ForwardDirection, InputActionVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputActionVector.X);
 	}
+}
+
+void AEFDPlayerController::AutoRun()
+{
+	if (!bAutoRunning) return;
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(Direction);
+
+		const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRunning = false;
+		}
+	}
+}
+
+UEFDAbilitySystemComponent* AEFDPlayerController::GetEFDAbilitySystemComponent()
+{
+	if (EFDAbilitySystem == nullptr)
+	{
+		EFDAbilitySystem = Cast<UEFDAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn()));
+	}
+	return EFDAbilitySystem;
 }
 
 

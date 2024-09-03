@@ -26,6 +26,12 @@ void AEFDCharacterBase::BeginPlay()
 	
 }
 
+FVector AEFDCharacterBase::GetCombatSocketLocation()
+{
+	check(Weapon);
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
 void AEFDCharacterBase::InitAbilityActorInfo()
 {
 	

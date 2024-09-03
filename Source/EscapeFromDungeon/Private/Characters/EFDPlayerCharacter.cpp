@@ -27,6 +27,7 @@ void AEFDPlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	//Init ability info for server
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 }
 
 void AEFDPlayerCharacter::OnRep_PlayerState()

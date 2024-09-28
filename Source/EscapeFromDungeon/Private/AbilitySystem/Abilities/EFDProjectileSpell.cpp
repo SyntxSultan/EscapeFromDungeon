@@ -9,8 +9,11 @@
 void UEFDProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
-	if (!HasAuthority(&ActivationInfo)) return;
+}
+
+void UEFDProjectileSpell::SpawnProjectile()
+{
+	if (!GetAvatarActorFromActorInfo()->HasAuthority()) return;
 
 	if (TScriptInterface<ICombatInterface> CombatInterface = GetAvatarActorFromActorInfo())
 	{

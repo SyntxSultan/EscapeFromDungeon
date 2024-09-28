@@ -15,6 +15,10 @@ class ESCAPEFROMDUNGEON_API UEFDProjectileSpell : public UEFDGameplayAbility
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AEFDProjectile> ProjectileClass;
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnProjectile();
 };

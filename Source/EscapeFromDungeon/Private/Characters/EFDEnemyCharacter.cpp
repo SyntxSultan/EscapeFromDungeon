@@ -5,7 +5,9 @@
 
 #include "AbilitySystem/EFDAbilitySystemComponent.h"
 #include "AbilitySystem/EFDAttributeSet.h"
+#include "Components/WidgetComponent.h"
 #include "EscapeFromDungeon/EscapeFromDungeon.h"
+#include "UI/Widgets/EFDUserWidget.h"
 
 AEFDEnemyCharacter::AEFDEnemyCharacter()
 {
@@ -16,18 +18,43 @@ AEFDEnemyCharacter::AEFDEnemyCharacter()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<UEFDAttributeSet>("AttributeSet");
+
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+	HealthBar->SetupAttachment(GetRootComponent());
 }
 
 void AEFDEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAbilityActorInfo();
+
+	if (UEFDUserWidget* EFDUserWidget = Cast<UEFDUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		EFDUserWidget->SetWidgetController(this);	
+	}
+	
+	if (const UEFDAttributeSet* EFDAttributeSet = Cast<UEFDAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EFDAttributeSet->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		});
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EFDAttributeSet->GetMaxHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHealthChanged.Broadcast(Data.NewValue);
+		});
+
+		/* Broadcast initial values */
+		OnHealthChanged.Broadcast(EFDAttributeSet->GetHealth());
+		OnMaxHealthChanged.Broadcast(EFDAttributeSet->GetMaxHealth());
+	}
 }
 
 void AEFDEnemyCharacter::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UEFDAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+	InitializeDefaultAttributes();
 }
 
 void AEFDEnemyCharacter::HighlightActor()

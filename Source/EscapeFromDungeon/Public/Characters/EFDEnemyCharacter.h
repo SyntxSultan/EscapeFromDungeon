@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "Characters/EFDCharacterBase.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "EFDEnemyCharacter.generated.h"
 
+
+class UWidgetComponent;
 
 UCLASS()
 class ESCAPEFROMDUNGEON_API AEFDEnemyCharacter : public AEFDCharacterBase, public IEnemyInterface
@@ -22,6 +25,11 @@ public:
 	/* Combat Interface */
 	virtual int32 GetPlayerLevel() override;
 	/* End Combat Interface*/
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnHealthChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxHealthChanged;
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,4 +38,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Class Defaults")
 	int32 Level = 1;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthBar;
 };

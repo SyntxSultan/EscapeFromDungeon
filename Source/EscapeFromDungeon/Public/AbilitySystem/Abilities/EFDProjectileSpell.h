@@ -7,6 +7,7 @@
 #include "EFDProjectileSpell.generated.h"
 
 class AEFDProjectile;
+class UGameplayEffect;
 
 UCLASS()
 class ESCAPEFROMDUNGEON_API UEFDProjectileSpell : public UEFDGameplayAbility
@@ -20,5 +21,8 @@ protected:
 	TSubclassOf<AEFDProjectile> ProjectileClass;
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnProjectile();
+	void SpawnProjectile(const FVector& TargetLocation);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };

@@ -7,7 +7,7 @@
 #include "CombatInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE()
+UINTERFACE(BlueprintType)
 class UCombatInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -24,4 +24,8 @@ class ESCAPEFROMDUNGEON_API ICombatInterface
 public:
 	virtual int32 GetPlayerLevel();
 	virtual FVector GetCombatSocketLocation();
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	// ReSharper disable once CppUEBlueprintImplementableEventNotImplemented
+	void UpdateFacingTarget(const FVector& WarpTargetLocation);
 };

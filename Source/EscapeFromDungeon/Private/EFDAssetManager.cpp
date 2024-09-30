@@ -4,6 +4,7 @@
 #include "EFDAssetManager.h"
 
 #include "EFDGameplayTags.h"
+#include "AbilitySystemGlobals.h"
 
 const UEFDAssetManager& UEFDAssetManager::Get()
 {
@@ -17,4 +18,5 @@ void UEFDAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
 	FEFDGameplayTags::InitializeNativeGameplayTags();
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }

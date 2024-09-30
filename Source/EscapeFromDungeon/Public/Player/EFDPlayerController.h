@@ -30,9 +30,15 @@ private:
 	TObjectPtr<UInputMappingContext> PlayerContext;
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> ShiftAction;
 
+	void ShiftPressed()  { bShiftDown = true;  };
+	void ShiftReleased() { bShiftDown = false; };
+	bool bShiftDown = false;
+	
 	void Move(const FInputActionValue& Value);
-
+	
 	void CursorTrace();
 	FHitResult CursorHit;
 	TScriptInterface<IEnemyInterface> LastActor;

@@ -44,7 +44,9 @@ void AEFDPlayerController::SetupInputComponent()
 	
 	UEFDInputComponent* EFDInputComponent = CastChecked<UEFDInputComponent>(InputComponent);
 	
-	EFDInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	EFDInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEFDPlayerController::Move);
+	EFDInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AEFDPlayerController::ShiftPressed);
+	EFDInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AEFDPlayerController::ShiftReleased);
 	EFDInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
@@ -89,15 +91,10 @@ void AEFDPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		}
 		return;
 	}
-
-	if (bTargeting)
-	{
-		if (GetEFDAbilitySystemComponent())
-		{
-			GetEFDAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
-		}
-	}
-	else
+	
+	if (GetEFDAbilitySystemComponent()) GetEFDAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+	
+	if (!bTargeting && !bShiftDown)
 	{
 		if (const APawn* ControlledPawn = GetPawn(); FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
@@ -127,7 +124,7 @@ void AEFDPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		}
 		return;
 	}
-	if (bTargeting)
+	if (bTargeting || bShiftDown)
 	{
 		if (GetEFDAbilitySystemComponent())
 		{

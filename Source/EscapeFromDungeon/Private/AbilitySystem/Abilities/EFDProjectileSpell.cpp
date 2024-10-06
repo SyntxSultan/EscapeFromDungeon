@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "Actors/EFDProjectile.h"
 #include "Interaction/CombatInterface.h"
+#include "EFDGameplayTags.h"
 
 void UEFDProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,const FGameplayEventData* TriggerEventData)
 {
@@ -38,8 +39,12 @@ void UEFDProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
-		
+
+		const FEFDGameplayTags GameplayTags = FEFDGameplayTags::Get();
+		const float ScaledDamage = Damage.GetValueAtLevel(/*GetAbilityLevel()*/ 15);
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, ScaledDamage);
 		Projectile->DamageEffectSpecHandle = SpecHandle;
+		
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }

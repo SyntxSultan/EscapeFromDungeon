@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EFDPlayerController.generated.h"
 
+class UDamageTextComponent;
 class USplineComponent;
 class UEFDAbilitySystemComponent;
 struct FInputActionValue;
@@ -22,9 +23,14 @@ class ESCAPEFROMDUNGEON_API AEFDPlayerController : public APlayerController
 public:
 	AEFDPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+	
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, AActor* TargetActor);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputMappingContext> PlayerContext;
@@ -67,4 +73,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 	
 	void AutoRun();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };

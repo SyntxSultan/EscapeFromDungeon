@@ -13,9 +13,8 @@ class UCombatInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
+class UAnimMontage;
+
 class ESCAPEFROMDUNGEON_API ICombatInterface
 {
 	GENERATED_BODY()
@@ -28,4 +27,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	// ReSharper disable once CppUEBlueprintImplementableEventNotImplemented
 	void UpdateFacingTarget(const FVector& WarpTargetLocation);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetHitReactMontage();
+
+	virtual void Die() = 0;
 };

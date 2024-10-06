@@ -24,21 +24,32 @@ AEFDCharacterBase::AEFDCharacterBase()
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-UAbilitySystemComponent* AEFDCharacterBase::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
-
 void AEFDCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-FVector AEFDCharacterBase::GetCombatSocketLocation()
+void AEFDCharacterBase::Die()
 {
-	check(Weapon);
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath();
+}
+
+void AEFDCharacterBase::MulticastHandleDeath_Implementation()
+{
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Dissolve();
 }
 
 void AEFDCharacterBase::InitAbilityActorInfo()
@@ -68,4 +79,36 @@ void AEFDCharacterBase::AddCharacterAbilities()
 	if (!HasAuthority()) return;
 	UEFDAbilitySystemComponent* EFDASC = CastChecked<UEFDAbilitySystemComponent>(AbilitySystemComponent);
 	EFDASC->AddCharacterAbilities(StartupAbilities);
+}
+
+void AEFDCharacterBase::Dissolve()
+{
+	if (IsValid(CharDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* DynamicMatInstance = UMaterialInstanceDynamic::Create(CharDissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicMatInstance);
+		StartCharDissolveTimeLine(DynamicMatInstance);
+	}
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* DynamicMatInstance = UMaterialInstanceDynamic::Create(WeaponDissolveMaterialInstance, this);
+		Weapon->SetMaterial(0, DynamicMatInstance);
+		StartWeaponDissolveTimeLine(DynamicMatInstance);
+	}
+}
+
+UAbilitySystemComponent* AEFDCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+FVector AEFDCharacterBase::GetCombatSocketLocation()
+{
+	check(Weapon);
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+UAnimMontage* AEFDCharacterBase::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
 }

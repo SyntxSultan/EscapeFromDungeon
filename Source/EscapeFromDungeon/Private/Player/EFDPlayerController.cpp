@@ -6,12 +6,14 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EFDGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
+#include "MovieSceneTracksComponentTypes.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/EFDAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
 #include "Input/EFDInputComponent.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/Widgets/DamageTextComponent.h"
 
 AEFDPlayerController::AEFDPlayerController()
 {
@@ -55,6 +57,18 @@ void AEFDPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 	CursorTrace();
 	AutoRun();
+}
+
+void AEFDPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AActor* TargetActor)
+{
+	if (IsValid(TargetActor) && DamageTextComponentClass)
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetActor, DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(DamageAmount);
+	}	
 }
 
 void AEFDPlayerController::CursorTrace()

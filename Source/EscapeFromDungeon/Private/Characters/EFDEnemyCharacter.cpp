@@ -3,10 +3,13 @@
 
 #include "Characters/EFDEnemyCharacter.h"
 
+#include "EFDGameplayTags.h"
+#include "AbilitySystem/EFDAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/EFDAbilitySystemComponent.h"
 #include "AbilitySystem/EFDAttributeSet.h"
 #include "Components/WidgetComponent.h"
 #include "EscapeFromDungeon/EscapeFromDungeon.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widgets/EFDUserWidget.h"
 
 AEFDEnemyCharacter::AEFDEnemyCharacter()
@@ -26,7 +29,9 @@ AEFDEnemyCharacter::AEFDEnemyCharacter()
 void AEFDEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
+	UEFDAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 
 	if (UEFDUserWidget* EFDUserWidget = Cast<UEFDUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -35,6 +40,7 @@ void AEFDEnemyCharacter::BeginPlay()
 	
 	if (const UEFDAttributeSet* EFDAttributeSet = Cast<UEFDAttributeSet>(AttributeSet))
 	{
+		AbilitySystemComponent->RegisterGameplayTagEvent(FEFDGameplayTags::Get().Effects_HitReact).AddUObject(this, &AEFDEnemyCharacter::HitReactTagChanged);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EFDAttributeSet->GetHealthAttribute()).AddLambda([this](const FOnAttributeChangeData& Data)
 		{
 			OnHealthChanged.Broadcast(Data.NewValue);
@@ -57,6 +63,17 @@ void AEFDEnemyCharacter::InitAbilityActorInfo()
 	InitializeDefaultAttributes();
 }
 
+void AEFDEnemyCharacter::InitializeDefaultAttributes() const
+{
+	UEFDAbilitySystemBlueprintLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
+}
+
+void AEFDEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+}
+
 void AEFDEnemyCharacter::HighlightActor()
 {
 	GetMesh()->SetRenderCustomDepth(true);
@@ -74,4 +91,10 @@ void AEFDEnemyCharacter::UnHighlightActor()
 int32 AEFDEnemyCharacter::GetPlayerLevel()
 {
 	return Level;
+}
+
+void AEFDEnemyCharacter::Die()
+{
+	SetLifeSpan(LifeSpanAfterDeath);
+	Super::Die();
 }

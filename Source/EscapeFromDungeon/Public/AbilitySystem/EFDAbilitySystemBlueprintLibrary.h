@@ -26,4 +26,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="EFDAbilitySystemBlueprintLibrary|CharacterClassDefaults")
 	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent);
+
+	UFUNCTION(BlueprintCallable, Category="EFDAbilitySystemBlueprintLibrary|CharacterClassDefaults")
+	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 };

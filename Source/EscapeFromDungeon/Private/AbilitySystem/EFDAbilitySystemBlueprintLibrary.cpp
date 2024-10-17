@@ -43,12 +43,9 @@ UAttributeMenuWidgetController* UEFDAbilitySystemBlueprintLibrary::GetAttributeM
 
 void UEFDAbilitySystemBlueprintLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, const ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* AbilitySystemComponent)
 {
-	AEFDGameModeBase* EFDGameMode = Cast<AEFDGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (!EFDGameMode) return;
-
 	AActor* AvatarActor = AbilitySystemComponent->GetAvatarActor();
-	const UCharacterClassInfo* CharacterClassInfo = EFDGameMode->CharacterClassInfo;
-	const FCharacterClassDefaultInfo DefaultInfo = EFDGameMode->CharacterClassInfo->GetCharacterClassInfo(CharacterClass);
+	const UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	const FCharacterClassDefaultInfo DefaultInfo = GetCharacterClassInfo(WorldContextObject)->GetCharacterClassInfo(CharacterClass);
 
 	FGameplayEffectContextHandle PrimaryEffectContext = AbilitySystemComponent->MakeEffectContext();
 	PrimaryEffectContext.AddSourceObject(AvatarActor);
@@ -68,13 +65,17 @@ void UEFDAbilitySystemBlueprintLibrary::InitializeDefaultAttributes(const UObjec
 
 void UEFDAbilitySystemBlueprintLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent)
 {
-	AEFDGameModeBase* EFDGameMode = Cast<AEFDGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (!EFDGameMode) return;
-
-	const UCharacterClassInfo* CharacterClassInfo = EFDGameMode->CharacterClassInfo;
+	const UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	for (TSubclassOf<UGameplayAbility> Ability : CharacterClassInfo->Abilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, 1.f);
 		AbilitySystemComponent->GiveAbility(AbilitySpec);
 	}
+}
+
+UCharacterClassInfo* UEFDAbilitySystemBlueprintLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	AEFDGameModeBase* EFDGameMode = Cast<AEFDGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (!EFDGameMode) return nullptr;
+	return EFDGameMode->CharacterClassInfo;
 }

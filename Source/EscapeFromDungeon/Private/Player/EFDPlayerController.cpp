@@ -6,7 +6,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EFDGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
-#include "MovieSceneTracksComponentTypes.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/EFDAbilitySystemComponent.h"
@@ -59,15 +58,15 @@ void AEFDPlayerController::PlayerTick(float DeltaTime)
 	AutoRun();
 }
 
-void AEFDPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AActor* TargetActor)
+void AEFDPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AActor* TargetActor, bool bBlock, bool bCritical)
 {
-	if (IsValid(TargetActor) && DamageTextComponentClass)
+	if (IsValid(TargetActor) && DamageTextComponentClass && IsLocalController())
 	{
 		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetActor, DamageTextComponentClass);
 		DamageText->RegisterComponent();
 		DamageText->AttachToComponent(TargetActor->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		DamageText->SetDamageText(DamageAmount);
+		DamageText->SetDamageText(DamageAmount, bBlock, bCritical);
 	}	
 }
 

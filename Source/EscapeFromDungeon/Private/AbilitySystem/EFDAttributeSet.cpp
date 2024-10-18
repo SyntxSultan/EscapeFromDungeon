@@ -6,6 +6,7 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EFDGameplayTags.h"
+#include "AbilitySystem/EFDAbilitySystemBlueprintLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -35,6 +36,12 @@ UEFDAttributeSet::UEFDAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
+
+	/* Resistance Attributes */
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Fire, GetFireResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Lightning, GetLightningResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Arcane, GetArcaneResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_Resistance_Physical, GetPhysicalResistanceAttribute);
 }
 
 void UEFDAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -63,6 +70,11 @@ void UEFDAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	/* Resistance Attributes */
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, FireResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, LightningResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, ArcaneResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEFDAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
 
 }
 
@@ -117,19 +129,20 @@ void UEFDAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 				TagContainer.AddTag(FEFDGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
-
-			ShowFloatingText(Props, LocalIncomingDamage);
+			const bool bBlock = UEFDAbilitySystemBlueprintLibrary::IsBlockedHit(Props.EffectContextHandle);
+			const bool bCritical = UEFDAbilitySystemBlueprintLibrary::IsCriticalHit(Props.EffectContextHandle);
+			ShowFloatingText(Props, LocalIncomingDamage, bBlock, bCritical);
 		}
 	}
 }
 
-void UEFDAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage) const
+void UEFDAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		if (AEFDPlayerController* PC = Cast<AEFDPlayerController>(UGameplayStatics::GetPlayerController(Props.SourceCharacter, 0)))
+		if (AEFDPlayerController* PC = Cast<AEFDPlayerController>(Props.SourceCharacter->Controller))
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter);
+			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
 }
@@ -257,4 +270,24 @@ void UEFDAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& Ol
 void UEFDAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, Vigor, OldManaRegeneration);
+}
+
+void UEFDAttributeSet::OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, FireResistance, OldFireResistance);
+}
+
+void UEFDAttributeSet::OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, LightningResistance, OldLightningResistance);
+}
+
+void UEFDAttributeSet::OnRep_ArcaneResistance(const FGameplayAttributeData& OldArcaneResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, ArcaneResistance, OldArcaneResistance);
+}
+
+void UEFDAttributeSet::OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEFDAttributeSet, PhysicalResistance, OldPhysicalResistance);
 }

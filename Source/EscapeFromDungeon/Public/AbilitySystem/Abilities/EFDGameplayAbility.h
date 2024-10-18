@@ -13,7 +13,5 @@ class ESCAPEFROMDUNGEON_API UEFDGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	FGameplayTag StartupInputTag;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
-	FScalableFloat Damage = 1.f;
+	
 };

@@ -31,7 +31,11 @@ void AEFDEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
-	UEFDAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	
+	if (HasAuthority())
+	{
+		UEFDAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	}
 
 	if (UEFDUserWidget* EFDUserWidget = Cast<UEFDUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -60,7 +64,11 @@ void AEFDEnemyCharacter::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UEFDAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
-	InitializeDefaultAttributes();
+
+	if (HasAuthority())
+	{
+		InitializeDefaultAttributes();
+	}
 }
 
 void AEFDEnemyCharacter::InitializeDefaultAttributes() const

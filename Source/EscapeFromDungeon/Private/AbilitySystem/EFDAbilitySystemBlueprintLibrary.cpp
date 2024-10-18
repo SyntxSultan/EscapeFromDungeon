@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/EFDAbilitySystemBlueprintLibrary.h"
 
+#include "EFDAbilityTypes.h"
 #include "Game/EFDGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EFDPlayerState.h"
@@ -78,4 +79,38 @@ UCharacterClassInfo* UEFDAbilitySystemBlueprintLibrary::GetCharacterClassInfo(co
 	AEFDGameModeBase* EFDGameMode = Cast<AEFDGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (!EFDGameMode) return nullptr;
 	return EFDGameMode->CharacterClassInfo;
+}
+
+bool UEFDAbilitySystemBlueprintLibrary::IsBlockedHit(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FEFDGameplayEffectContext* EFDContext = static_cast<const FEFDGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return EFDContext->IsBlockedHit();
+	}
+	return false;
+}
+
+bool UEFDAbilitySystemBlueprintLibrary::IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle)
+{
+	if (const FEFDGameplayEffectContext* EFDContext = static_cast<const FEFDGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		return EFDContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void UEFDAbilitySystemBlueprintLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockedHit)
+{
+	if (FEFDGameplayEffectContext* EFDContext = static_cast<FEFDGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		EFDContext->SetIsBlockedHit(bInIsBlockedHit);
+	}
+}
+
+void UEFDAbilitySystemBlueprintLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& ContextHandle, bool bInIsCriticalHit)
+{
+	if (FEFDGameplayEffectContext* EFDContext = static_cast<FEFDGameplayEffectContext*>(ContextHandle.Get()))
+	{
+		EFDContext->SetIsCriticalHit(bInIsCriticalHit);
+	}
 }

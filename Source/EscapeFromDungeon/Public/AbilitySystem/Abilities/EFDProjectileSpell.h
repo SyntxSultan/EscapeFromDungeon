@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/EFDGameplayAbility.h"
+#include "AbilitySystem/Abilities/EFDDamageGameplayAbility.h"
 #include "EFDProjectileSpell.generated.h"
 
 class AEFDProjectile;
 class UGameplayEffect;
 
 UCLASS()
-class ESCAPEFROMDUNGEON_API UEFDProjectileSpell : public UEFDGameplayAbility
+class ESCAPEFROMDUNGEON_API UEFDProjectileSpell : public UEFDDamageGameplayAbility
 {
 	GENERATED_BODY()
 	
@@ -23,6 +23,4 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SpawnProjectile(const FVector& TargetLocation);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };

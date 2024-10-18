@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EFDAbilitySystemBlueprintLibrary.generated.h"
 
+struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
 class UAttributeMenuWidgetController;
 class UOverlayWidgetController;
@@ -29,4 +30,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="EFDAbilitySystemBlueprintLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category="EFDAbilitySystemBlueprintLibrary|GameplayEffects")
+	static bool IsBlockedHit(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="EFDAbilitySystemBlueprintLibrary|GameplayEffects")
+	static bool IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintCallable, Category="EFDAbilitySystemBlueprintLibrary|GameplayEffects")
+	static void SetIsBlockedHit(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle, bool bInIsBlockedHit);
+
+	UFUNCTION(BlueprintCallable, Category="EFDAbilitySystemBlueprintLibrary|GameplayEffects")
+	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle, bool bInIsCriticalHit);
 };

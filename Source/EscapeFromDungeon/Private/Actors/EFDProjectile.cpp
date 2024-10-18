@@ -42,10 +42,15 @@ void AEFDProjectile::BeginPlay()
 }
 void AEFDProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-	LoopSoundComponent->Stop();
+	if (DamageEffectSpecHandle.Data.IsValid() && DamageEffectSpecHandle.Data.Get()->GetContext().Get()->GetEffectCauser() == OtherActor) return;
 
+	if (!bHit)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+		if(LoopSoundComponent) LoopSoundComponent->Stop();
+	}
+	
 	if (HasAuthority())
 	{
 		if (UAbilitySystemComponent* OverlapActorASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
@@ -66,7 +71,7 @@ void AEFDProjectile::Destroyed()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		LoopSoundComponent->Stop();
+		if(LoopSoundComponent) LoopSoundComponent->Stop();
 	}
 	Super::Destroyed();
 }

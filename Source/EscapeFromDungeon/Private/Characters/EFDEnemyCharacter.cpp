@@ -7,6 +7,9 @@
 #include "AbilitySystem/EFDAbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/EFDAbilitySystemComponent.h"
 #include "AbilitySystem/EFDAttributeSet.h"
+#include "AI/EFDAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
 #include "EscapeFromDungeon/EscapeFromDungeon.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,6 +17,11 @@
 
 AEFDEnemyCharacter::AEFDEnemyCharacter()
 {
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UEFDAbilitySystemComponent>("AbilitySystemComponent");
@@ -24,6 +32,19 @@ AEFDEnemyCharacter::AEFDEnemyCharacter()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
+}
+
+void AEFDEnemyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	if (!HasAuthority()) return;
+	
+ 	EFDAIController = Cast<AEFDAIController>(NewController);
+	EFDAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	EFDAIController->RunBehaviorTree(BehaviorTree);
+	EFDAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	EFDAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
 void AEFDEnemyCharacter::BeginPlay()
@@ -80,6 +101,7 @@ void AEFDEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int3
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	EFDAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
 void AEFDEnemyCharacter::HighlightActor()

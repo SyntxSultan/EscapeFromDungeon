@@ -19,6 +19,10 @@ void AEFDEffectActor::BeginPlay()
 
 void AEFDEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> GameplayEffectClass)
 {
+	for (const FName& Tag : TagsToIgnoreEffect)
+	{
+		if (TargetActor->ActorHasTag(Tag)) return;
+	}
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	if (TargetASC == nullptr) return;
 
@@ -33,10 +37,19 @@ void AEFDEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGame
 	{
 		ActiveEffectHandles.Add(ActiveEffectHandle, TargetASC);
 	}
+
+	if (!bIsInfinite)
+	{
+		Destroy();
+	}
 }
 
 void AEFDEffectActor::OnOverlap(AActor* TargetActor)
 {
+	for (const FName& Tag : TagsToIgnoreEffect)
+	{
+		if (TargetActor->ActorHasTag(Tag)) return;
+	}
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnOverlap)
 	{
 		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);
@@ -53,6 +66,10 @@ void AEFDEffectActor::OnOverlap(AActor* TargetActor)
 
 void AEFDEffectActor::OnEndOverlap(AActor* TargetActor)
 {
+	for (const FName& Tag : TagsToIgnoreEffect)
+	{
+		if (TargetActor->ActorHasTag(Tag)) return;
+	}
 	if (InstantEffectApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		ApplyEffectToTarget(TargetActor, InstantGameplayEffectClass);

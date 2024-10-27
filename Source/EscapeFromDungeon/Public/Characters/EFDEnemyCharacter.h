@@ -11,6 +11,8 @@
 
 
 class UWidgetComponent;
+class UBehaviorTree;
+class AEFDAIController;
 
 UCLASS()
 class ESCAPEFROMDUNGEON_API AEFDEnemyCharacter : public AEFDCharacterBase, public IEnemyInterface
@@ -18,6 +20,8 @@ class ESCAPEFROMDUNGEON_API AEFDEnemyCharacter : public AEFDCharacterBase, publi
 	GENERATED_BODY()
 public:
 	AEFDEnemyCharacter();
+
+	virtual void PossessedBy(AController* NewController) override;
 	
 	// Enemy Interface
 	virtual void HighlightActor() override;
@@ -59,4 +63,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
 
+	UPROPERTY(EditDefaultsOnly, Category="AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AEFDAIController> EFDAIController;
 };

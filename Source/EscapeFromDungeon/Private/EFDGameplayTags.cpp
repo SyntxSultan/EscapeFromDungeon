@@ -124,7 +124,7 @@ void FEFDGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Damage.Physical"), FString("Physical Damage Type"));
-
+	
 	// Binding map DamageTypes to DamageResistances
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Fire, GameplayTags.Attributes_Resistance_Fire);
 	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Lightning, GameplayTags.Attributes_Resistance_Lightning);
@@ -136,4 +136,8 @@ void FEFDGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	FName("Effects.HitReact"), FString("Tag granted when Hit Reacting"));
 
+	/* Abilities */
+
+	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Attack"), FString("Attack ability tag"));
 }

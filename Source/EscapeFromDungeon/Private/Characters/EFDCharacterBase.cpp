@@ -50,6 +50,8 @@ void AEFDCharacterBase::MulticastHandleDeath_Implementation()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	Dissolve();
+
+	bDead = true;
 }
 
 void AEFDCharacterBase::InitAbilityActorInfo()
@@ -102,10 +104,20 @@ UAbilitySystemComponent* AEFDCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-FVector AEFDCharacterBase::GetCombatSocketLocation()
+FVector AEFDCharacterBase::GetCombatSocketLocation_Implementation()
 {
 	check(Weapon);
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+bool AEFDCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* AEFDCharacterBase::GetAvatar_Implementation()
+{
+	return this;
 }
 
 UAnimMontage* AEFDCharacterBase::GetHitReactMontage_Implementation()

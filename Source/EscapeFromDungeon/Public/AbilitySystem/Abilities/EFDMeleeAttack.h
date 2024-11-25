@@ -6,9 +6,6 @@
 #include "AbilitySystem/Abilities/EFDDamageGameplayAbility.h"
 #include "EFDMeleeAttack.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ESCAPEFROMDUNGEON_API UEFDMeleeAttack : public UEFDDamageGameplayAbility
 {

@@ -55,7 +55,7 @@ void AEFDEnemyCharacter::BeginPlay()
 	
 	if (HasAuthority())
 	{
-		UEFDAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+		UEFDAbilitySystemBlueprintLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
 
 	if (UEFDUserWidget* EFDUserWidget = Cast<UEFDUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -116,6 +116,16 @@ void AEFDEnemyCharacter::UnHighlightActor()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AEFDEnemyCharacter::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* AEFDEnemyCharacter::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
 }
 
 int32 AEFDEnemyCharacter::GetPlayerLevel()
